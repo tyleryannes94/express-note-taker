@@ -30,6 +30,22 @@ app.post('/api/notes', (req, res) => {
     });
 });
 
+app.delete('/api/notes/:id', (req, res) => {
+    const noteId = req.params.id;
+    fs.readFile('./db/db.json', 'utf8', (err, data) => {
+        if (err) throw err;
+        let notes = JSON.parse(data);
+        notes = notes.filter(note => note.id !== noteId);
+        fs.writeFile('./db/db.json', JSON.stringify(notes), (err) => {
+            if (err) {
+                res.status(500).send('Error deleting the note.');
+            } else {
+                res.send('Note deleted successfully.');
+            }
+        });
+    });
+});
+
 app.get('/notes', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'notes.html'));
 })
